@@ -75,8 +75,8 @@ mate.hideturtle()
 
 
 # Variables
-food_types = [food, mate] # list with both food and mate
-current_food = random.choice(food_types)  # randomly select the between food and mate
+types = [food, mate] # list with both food and mate
+current_food = random.choice(types)  # randomly select the between food and mate
 current_food.showturtle()
 
 # Initial turtle babies is an empty list
@@ -125,11 +125,20 @@ screen.onkey(right, 'Right')
 # main loop
 while True:
     screen.update()
+    
 
     # snake and food/mate collision
     if snake.distance(current_food) < 20:
+        
+        current_food.hideturtle()
+        # create new random food/turtle
         x = random.randint(-260, 260)
         y = random.randint(-230, 230)
+
+        # Set the new position for the next type
+        new_food = random.choice(types)
+        new_food.goto(x, y)
+
         
         if current_food == food:
             scoring.clear()
@@ -147,25 +156,48 @@ while True:
             baby.penup()
             babies.append(baby)
 
-        # Move each following turtle to the position of the turtle in front
-        for i in range(len(babies)-1, 0, -1):
-            x = babies[i-1].xcor()
-            y = babies[i-1].ycor
-            babies[i].goto(x, y)
-            
-        # Move the first segment to the position of the mother turtle
-        if len(babies) > 0:
-            x = snake.xcor()
-            y = snake.ycor()
-            babies[0].goto(x, y)
-            
             delay += 0.005
-        
 
-        current_food.hideturtle()  # Hide the current food
-        current_food = random.choice(food_types)  # Randomly select a new food type
-        current_food.goto(x, y)  # Set the new position for the current food
+        # set new_food back to current_food
+        current_food = new_food
         current_food.showturtle()
+
+        # Move each following baby to the position of the baby in front
+    for i in range(len(babies) -1, 0, -1):
+        heading = snake.heading()
+        distance = 20
+        if heading == 0: # moving right
+            x = babies[i - 1].xcor() - distance
+            y = babies[i - 1].ycor()  
+        elif heading == 90: # moving up
+            x = babies[i - 1].xcor() 
+            y = babies[i - 1].ycor() - distance
+        elif heading == 180: # moving left
+            x = babies[i - 1].xcor() + distance
+            y = babies[i - 1].ycor() 
+        elif heading == 270: # moving down
+            x = babies[i - 1].xcor() 
+            y = babies[i - 1].ycor() + distance
+        babies[i].goto(x, y)
+    
+
+    # Move the first baby to the position of the snake
+    if len(babies) > 0: 
+        heading = snake.heading()
+        distance = 20
+        if heading == 0: # moving right
+            a = snake.xcor() - distance
+            b = snake.ycor() 
+        elif heading == 90: # moving up
+            a = snake.xcor()
+            b = snake.ycor() - distance
+        elif heading == 180: # moving left
+            a = snake.xcor() + distance
+            b = snake.ycor() 
+        elif heading == 270: # moving down
+            a = snake.xcor() 
+            b = snake.ycor() + distance
+        babies[0].goto(a, b)
 
         
 
@@ -178,6 +210,15 @@ while True:
         scoring.write("   Game Over \n Your Score is {}".format(score),align="center", font=("Courier", 30,"bold"))
     snake.forward(8)
 
+    #check for collision with body
+    for baby in babies:
+        if baby.distance(snake)<10:
+            time.sleep(1)
+            screen.clear()
+            screen.bgcolor("blue")
+            scoring.goto(0,0)
+            scoring.write("   Game Over \n Your Score is {}".format(score),align="center", font=("Courier", 30,"bold"))
+    
     time.sleep(delay)
 
 turtle.Terminator()
