@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(
-    name = "ultimate-Snake",
+    name = "Snake in Turtle Costume",
     version = "0.0.1",
     author = "piakoch",
     author_email = "pia.koch@pmb-net.de",
