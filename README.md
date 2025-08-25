@@ -1,2 +1,2 @@
 # My-App
-This is my App
+This is a snake game using the turtle module.
